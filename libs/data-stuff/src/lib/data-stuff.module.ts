@@ -12,12 +12,17 @@ import { CustomersComponent } from './containers/customers/customers.component';
 import { CustomerListComponent } from './components/customer-list/customer-list.component';
 import { CustomerDetailsComponent } from './components/customer-details/customer-details.component';
 import { AlertComponent } from '@ht/core-ui';
+import { ModesComponent } from './containers/modes/modes.component';
 const routes: Routes = [
   {
     // /data (this is because of the routing set up in app module)
     path: '',
     component: DataStuffComponent,
     children: [
+      {
+        path: 'modes',
+        component: ModesComponent,
+      },
       {
         // /data/crm
         path: 'crm',
@@ -55,6 +60,7 @@ const routes: Routes = [
     CustomersComponent,
     CustomerListComponent,
     CustomerDetailsComponent,
+    ModesComponent,
   ],
 })
 export class DataStuffModule {}
