@@ -13,6 +13,8 @@ import { CustomerListComponent } from './components/customer-list/customer-list.
 import { CustomerDetailsComponent } from './components/customer-details/customer-details.component';
 import { AlertComponent } from '@ht/core-ui';
 import { ModesComponent } from './containers/modes/modes.component';
+import { SharedModule } from '@ht/shared';
+import { DataStuffEffects } from './state/effects/data-stuff.effects';
 const routes: Routes = [
   {
     // /data (this is because of the routing set up in app module)
@@ -33,7 +35,7 @@ const routes: Routes = [
             component: CustomerListComponent,
           },
           {
-            path: 'details',
+            path: 'details/:id',
             component: CustomerDetailsComponent,
           },
           {
@@ -50,9 +52,13 @@ const routes: Routes = [
     CommonModule,
     RouterModule.forChild(routes),
     StoreModule.forFeature(featureName, reducers),
-    EffectsModule.forFeature([CustomerEffects]),
+    EffectsModule.forFeature([
+      CustomerEffects,
+      DataStuffEffects,
+    ]),
     AlertComponent,
     HttpClientModule,
+    SharedModule,
   ],
   declarations: [
     DataStuffComponent,
