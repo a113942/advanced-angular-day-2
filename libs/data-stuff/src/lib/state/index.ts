@@ -26,8 +26,10 @@ const selectFeature = createFeatureSelector<DataStuffState>(featureName);
 const selectCustomersBranch = createSelector(selectFeature, (f) => f.customers);
 
 // 3. Helpers (optional)
-const { selectAll: selectAllCustomerEntityArray } =
-  fromCustomers.adapter.getSelectors(selectCustomersBranch);
+const {
+  selectAll: selectAllCustomerEntityArray,
+  selectEntities: selectCustomerEntities,
+} = fromCustomers.adapter.getSelectors(selectCustomersBranch);
 
 const selectCustomersLoaded = createSelector(
   selectCustomersBranch,
@@ -37,21 +39,49 @@ const selectCustomersErrored = createSelector(
   selectCustomersBranch,
   (b) => b.errored,
 );
+const selectSelectedCustomerId = createSelector(
+  selectCustomersBranch,
+  (b) => b.selectedCustomerId,
+);
 // 4. What your Components Need
 
-// if they are at the /crm url
+// if they are at the /crm url (the end of contains /crm)
 // and the data is currently loaded, then yeah, we need to load the data.
-
 const paths = {
   crm: /\/crm/i,
 };
 export const selectCustomersNeedLoaded = createSelector(
   selectUrl,
   selectCustomersLoaded,
-  (url, Loaded) => {
-    return !Loaded && !!url.match(paths.crm);
+  (url, loaded) => {
+    return !loaded && !!url.match(paths.crm);
   },
 );
+
+export const selectCustomerDetails = createSelector(
+  selectCustomerEntities,
+  selectCustomersLoaded,
+  selectCustomersErrored,
+  selectSelectedCustomerId,
+  (customers, loading, errored, id) => {
+    if (id === undefined) {
+      return undefined;
+    }
+    const customer = customers[id];
+    if (customer) {
+      const result: fromModels.CustomerDetailsItem & LoadingModes = {
+        ...customer,
+        loading: !loading,
+        errored: errored,
+        empty: false,
+      };
+      return result;
+    } else {
+      return null;
+    }
+  },
+);
+
 export const selectCustomerListModel = createSelector(
   selectAllCustomerEntityArray,
   selectCustomersLoaded,
@@ -62,13 +92,13 @@ export const selectCustomerListModel = createSelector(
       errored,
       empty: customers.length === 0,
       data: customers.map(
-        (cust) =>
-          ({
-            id: cust.id,
-            firstName: cust.firstName,
-            lastName: cust.lastName,
-            company: cust.company,
-          } as fromModels.CustomerSummaryListItem),
+        (cust): fromModels.CustomerSummaryListItem => ({
+          id: cust.id,
+          firstName: cust.firstName,
+          lastName: cust.lastName,
+          fullName: `${cust.firstName} ${cust.lastName}`,
+          company: cust.company,
+        }),
       ),
     };
     return result;
