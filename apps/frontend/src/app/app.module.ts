@@ -10,6 +10,8 @@ import { AlertComponent } from '@ht/core-ui';
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { RouterState, StoreRouterConnectingModule } from '@ngrx/router-store';
+import { SharedModule } from '@ht/shared';
 const routes: Routes = [
   {
     path: '',
@@ -32,8 +34,11 @@ const routes: Routes = [
     RouterModule.forRoot(routes),
     StoreModule.forRoot({}),
     EffectsModule.forRoot([]),
+    SharedModule,
     // TODO: FIX THIS TOMORROW
     StoreDevtoolsModule.instrument(),
+    StoreDevtoolsModule.instrument(),
+    StoreRouterConnectingModule.forRoot({ routerState: RouterState.Minimal }),
   ],
   providers: [],
   bootstrap: [AppComponent],
