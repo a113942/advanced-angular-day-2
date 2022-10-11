@@ -25,7 +25,7 @@ describe('The Data CRM Feature', () => {
     });
   });
 
-  describe('No Data From The Api', () => {
+  describe('Error Response from The Api', () => {
     beforeEach(() => {
       cy.intercept('GET', 'https://api.mycrmsitedotcom.com/customers', {
         statusCode: 400,
@@ -34,6 +34,21 @@ describe('The Data CRM Feature', () => {
     });
     it('loads', () => {
       // left intentionally blank.
+    });
+  });
+
+  describe('Slow Api Response', () => {
+    beforeEach(() => {
+      cy.intercept('GET', 'https://api.mycrmsitedotcom.com/customers', {
+        fixture: 'employees-full.json',
+        delay: 3000, // three seconds
+      }).as('response');
+      cy.visit('/data/crm');
+    });
+    it('loads', () => {
+      cy.wait('@response');
+
+      // I write tests..
     });
   });
 });
